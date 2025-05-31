@@ -1,5 +1,4 @@
 from mapClass import DungeonMap as Map
-import threading as th
 from gameWindow import GameWindow
 
 
