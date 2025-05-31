@@ -1,7 +1,7 @@
 import random
 from typing import List, Tuple
 
-class MazeDungeonMap:
+class DungeonMap:
     def __init__(self,
                  size: int,
                  room_chance: float = 0.4,
@@ -25,6 +25,8 @@ class MazeDungeonMap:
         self.room_chance = room_chance
         self.extra_connection_chance = extra_connection_chance
 
+        self.generate()
+
     def generate(self) -> List[List[int]]:
         dirs = [(2, 0), (-2, 0), (0, 2), (0, -2)]
         stack: List[Tuple[int, int]] = [self.home]
@@ -35,7 +37,7 @@ class MazeDungeonMap:
 
             for dx, dy in dirs:
                 nx, ny = x + dx, y + dy
-                if self._in_bounds(nx, ny) and self.grid[nx][ny] == 0:
+                if self._inBounds(nx, ny) and self.grid[nx][ny] == 0:
                     neighbors.append((nx, ny))
 
             if neighbors:
@@ -55,7 +57,7 @@ class MazeDungeonMap:
                     count_adjacent_passages = 0
                     for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
                         ni, nj = i + dx, j + dy
-                        if self._in_bounds(ni, nj) and self.grid[ni][nj] in (1, 2):
+                        if self._inBounds(ni, nj) and self.grid[ni][nj] in (1, 2):
                             count_adjacent_passages += 1
                     if count_adjacent_passages == 1:
                         dead_ends.append((i, j))
@@ -64,10 +66,10 @@ class MazeDungeonMap:
             if random.random() < self.room_chance:
                 self.grid[i][j] = 3
 
-        self._add_extra_connections()
+        self._addExtraConnections()
         return self.grid
 
-    def _add_extra_connections(self):
+    def _addExtraConnections(self):
         for i in range(1, self.size - 1):
             for j in range(1, self.size - 1):
                 if self.grid[i][j] != 0:
@@ -90,10 +92,10 @@ class MazeDungeonMap:
                     if up == 0 and down == 0 and random.random() < self.extra_connection_chance:
                         self.grid[i][j] = 2
 
-    def _in_bounds(self, x: int, y: int) -> bool:
+    def _inBounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.size and 0 <= y < self.size
 
-    def print_square_map(self):
+    def printMap(self):
         cell_repr = {
             0: '  ',
             1: 'H ',
@@ -111,7 +113,4 @@ class MazeDungeonMap:
         print(" R = Room")
 
 
-if __name__ == "__main__":
-    dm = MazeDungeonMap(size=51, room_chance=1.0, extra_connection_chance=0.15)
-    dm.generate()
-    dm.print_square_map()
+
