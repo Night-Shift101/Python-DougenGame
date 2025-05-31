@@ -120,8 +120,8 @@ class DungeonMap:
             Hallway: '. ',
             Room: 'R '
         }
-
-        print('┌' + '─' * (2 * self.size) + '┐')
+        textmap = ""
+        textmap = '┌' + '─' * (2 * self.size) + '┐' + "\n"
         for row in self.grid:
             line = ''
             for cell in row:
@@ -129,11 +129,18 @@ class DungeonMap:
                     if isinstance(cell, cls):
                         line += symbol
                         break
-            print(f'│{line}│')
-        print('└' + '─' * (2 * self.size) + '┘')
-        print(" H = Home")
-        print(" . = Hallway")
-        print(" R = Room")
+            textmap = textmap + (f'│{line}│\n')
+        textmap = textmap + ('└' + '─' * (2 * self.size) + '┘\n')
+        textmap = textmap + (" H = Home\n")
+        textmap = textmap + (" . = Hallway\n")
+        textmap = textmap + (" R = Room")
+        return textmap
+    def regenerate(self):
+        self.grid: List[List[int]] = [[0] * self.size for _ in range(self.size)]
+        self.grid[self.home[0]][self.home[1]] = 1
+        self.generate()
+        self.grid = self.buildRooms()
+
 
 
 
