@@ -1,6 +1,6 @@
 import random
 from typing import List, Tuple
-
+from roomClass import tile, Hallway, Empty, Home, Room 
 class DungeonMap:
     def __init__(self,
                  size: int,
@@ -26,6 +26,7 @@ class DungeonMap:
         self.extra_connection_chance = extra_connection_chance
 
         self.generate()
+        self.grid = self.buildRooms()
 
     def generate(self) -> List[List[int]]:
         dirs = [(2, 0), (-2, 0), (0, 2), (0, -2)]
@@ -94,18 +95,40 @@ class DungeonMap:
 
     def _inBounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.size and 0 <= y < self.size
-
+    def buildRooms(self) -> List[List[tile]]:
+        """
+        Iterate over self.grid (which holds ints 0..3) and return
+        a new 2D list of room‐subclass instances corresponding to each tile.
+        """
+        tile_grid: List[List[tile]] = [[None] * self.size for _ in range(self.size)]
+        for i in range(self.size):
+            for j in range(self.size):
+                val = self.grid[i][j]
+                if val == 0:
+                    tile_grid[i][j] = Empty()
+                elif val == 1:
+                    tile_grid[i][j] = Home()
+                elif val == 2:
+                    tile_grid[i][j] = Hallway()
+                elif val == 3:
+                    tile_grid[i][j] = Room()
+        return tile_grid
     def printMap(self):
         cell_repr = {
-            0: '  ',
-            1: 'H ',
-            2: '. ',
-            3: 'R '
+            Empty: '  ',
+            Home: 'H ',
+            Hallway: '. ',
+            Room: 'R '
         }
 
         print('┌' + '─' * (2 * self.size) + '┐')
         for row in self.grid:
-            line = ''.join(cell_repr[cell] for cell in row)
+            line = ''
+            for cell in row:
+                for cls, symbol in cell_repr.items():
+                    if isinstance(cell, cls):
+                        line += symbol
+                        break
             print(f'│{line}│')
         print('└' + '─' * (2 * self.size) + '┘')
         print(" H = Home")
