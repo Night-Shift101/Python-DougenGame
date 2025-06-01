@@ -1,9 +1,14 @@
 import tkinter as tk
-from mapClass import DungeonMap as Map
-from playerClass import PlayerClass as Player
-from timerWindow import TimerApp
-from gameSettingsWindow import SettingsApp
-from gameWindowClass import GameWindow
+import sys
+# Ensure the application folder is in the Python path for imports
+sys.path.insert(1, 'code/')
+
+# Import necessary classes from the code directory
+from mapClass import DungeonMap as Map # type: ignore
+from playerClass import PlayerClass as Player # type: ignore
+from timerWindow import TimerApp # type: ignore
+from gameSettingsWindow import SettingsApp # type: ignore
+from gameWindowClass import GameWindow  # type: ignore
 
 
 def main():
