@@ -1,9 +1,11 @@
+from roomClass import Empty
 class PlayerClass:
     def __init__(self, map):
         self.map = map
         self.location = None
         self.map.assignPlayer(self)
         self.hasMoved = False
+        self.hardMode = False
         print(self.location)
     def move(self, window, direction: str):
         if window.completed:
@@ -28,8 +30,10 @@ class PlayerClass:
         else:
             print("Invalid direction. Use 'up', 'down', 'left', or 'right'.")
             return
-        
+       
         if self.map.canMove(new_location):
+            if self.hardMode:
+                self.map.grid[y][x] = Empty([x, y])
             self.location = new_location
             print(f"Moved to {self.location}")
         else:

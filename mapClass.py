@@ -146,6 +146,7 @@ class DungeonMap:
     
     def regenerate(self):
         self.grid: List[List[int]] = [[0] * self.size for _ in range(self.size)]
+        self.home = (self.size // 2, self.size // 2)
         self.grid[self.home[0]][self.home[1]] = 1
         self.generate()
         self.grid = self.buildRooms()
