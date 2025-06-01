@@ -94,6 +94,7 @@ class DungeonMap:
 
     def _inBounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.size and 0 <= y < self.size
+    
     def buildRooms(self) -> List[List[tile]]:
         tile_grid: List[List[tile]] = [[None] * self.size for _ in range(self.size)]
         possibleRooms: List[Tuple[int, int]] = []
@@ -117,6 +118,7 @@ class DungeonMap:
                 elif tile_grid[i][j] is None:
                     tile_grid[i][j] = Empty([i, j])
         return tile_grid
+    
     def printMap(self, dev: bool = False):
         
         cell_repr = {
@@ -141,19 +143,21 @@ class DungeonMap:
             textmap = textmap + (f'│{line}│\n')
         textmap = textmap + ('└' + '─' * (2 * self.size) + '┘\n')
         return textmap
+    
     def regenerate(self):
         self.grid: List[List[int]] = [[0] * self.size for _ in range(self.size)]
         self.grid[self.home[0]][self.home[1]] = 1
         self.generate()
         self.grid = self.buildRooms()
+
     def assignPlayer(self, player):
         self.player = player
         self.player.location = self.home
+
     def canMove(self, new_location: Tuple[int, int]) -> bool:
             x, y = new_location
             if not self._inBounds(y, x):
                 return False
-
             cell = self.grid[y][x]
             return not isinstance(cell, (Empty))
 
