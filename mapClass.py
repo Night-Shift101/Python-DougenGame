@@ -15,7 +15,7 @@ class DungeonMap:
 
         if size % 2 == 0:
             size -= 1
-
+        self.player = None
         self.size = size
         self.grid: List[List[int]] = [[0] * size for _ in range(size)]
 
@@ -114,6 +114,7 @@ class DungeonMap:
                     tile_grid[i][j] = Room()
         return tile_grid
     def printMap(self):
+        
         cell_repr = {
             Empty: '  ',
             Home: 'H ',
@@ -122,13 +123,17 @@ class DungeonMap:
         }
         textmap = ""
         textmap = '┌' + '─' * (2 * self.size) + '┐' + "\n"
-        for row in self.grid:
+        for y, row in enumerate(self.grid):
             line = ''
-            for cell in row:
-                for cls, symbol in cell_repr.items():
-                    if isinstance(cell, cls):
-                        line += symbol
-                        break
+            for x, cell in enumerate(row):
+                # If this coordinate matches the player’s location, print "P":
+                if (x, y) == self.player.location:
+                    line += '█ '
+                else:
+                    for cls, symbol in cell_repr.items():
+                        if isinstance(cell, cls):
+                            line += symbol
+                            break
             textmap = textmap + (f'│{line}│\n')
         textmap = textmap + ('└' + '─' * (2 * self.size) + '┘\n')
         textmap = textmap + (" H = Home\n")
@@ -140,7 +145,15 @@ class DungeonMap:
         self.grid[self.home[0]][self.home[1]] = 1
         self.generate()
         self.grid = self.buildRooms()
+    def assignPlayer(self, player):
+        self.player = player
+        self.player.location = self.home
+    def canMove(self, new_location: Tuple[int, int]) -> bool:
+            x, y = new_location
+            if not self._inBounds(y, x):
+                return False
 
-
+            cell = self.grid[y][x]
+            return not isinstance(cell, (Empty))
 
 
