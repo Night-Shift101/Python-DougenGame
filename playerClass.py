@@ -3,8 +3,15 @@ class PlayerClass:
         self.map = map
         self.location = None
         self.map.assignPlayer(self)
+        self.hasMoved = False
         print(self.location)
     def move(self, window, direction: str):
+        if window.completed:
+            print("Game completed. No further moves allowed.")
+            return
+        if not self.hasMoved:
+            self.hasMoved = True
+            window.timer.start_timer()
         if self.location is None:
             print("Player has no location assigned.")
             return

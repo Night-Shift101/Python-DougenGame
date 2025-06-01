@@ -16,12 +16,11 @@ class DungeonMap:
         if size % 2 == 0:
             size -= 1
         self.player = None
+
         self.size = size
         self.grid: List[List[int]] = [[0] * size for _ in range(size)]
-
         self.home = (size // 2, size // 2)
         self.grid[self.home[0]][self.home[1]] = 1
-
         self.room_chance = room_chance
         self.extra_connection_chance = extra_connection_chance
 
@@ -96,24 +95,29 @@ class DungeonMap:
     def _inBounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.size and 0 <= y < self.size
     def buildRooms(self) -> List[List[tile]]:
-        """
-        Iterate over self.grid (which holds ints 0..3) and return
-        a new 2D list of room‐subclass instances corresponding to each tile.
-        """
         tile_grid: List[List[tile]] = [[None] * self.size for _ in range(self.size)]
+        possibleRooms: List[Tuple[int, int]] = []
         for i in range(self.size):
+            
             for j in range(self.size):
                 val = self.grid[i][j]
                 if val == 0:
-                    tile_grid[i][j] = Empty()
+                    tile_grid[i][j] = Empty([i, j])
                 elif val == 1:
-                    tile_grid[i][j] = Home()
+                    tile_grid[i][j] = Home([i, j])
                 elif val == 2:
-                    tile_grid[i][j] = Hallway()
+                    tile_grid[i][j] = Hallway([i, j])
                 elif val == 3:
-                    tile_grid[i][j] = Room()
+                    possibleRooms.append((i,j))
+        finalRoom = random.choice(possibleRooms)
+        for i in range(self.size):
+            for j in range(self.size):
+                if (i, j) == finalRoom:
+                    tile_grid[i][j] = Room([i, j])
+                elif tile_grid[i][j] is None:
+                    tile_grid[i][j] = Empty([i, j])
         return tile_grid
-    def printMap(self):
+    def printMap(self, dev: bool = False):
         
         cell_repr = {
             Empty: '  ',
@@ -123,10 +127,10 @@ class DungeonMap:
         }
         textmap = ""
         textmap = '┌' + '─' * (2 * self.size) + '┐' + "\n"
+        
         for y, row in enumerate(self.grid):
             line = ''
             for x, cell in enumerate(row):
-                # If this coordinate matches the player’s location, print "P":
                 if (x, y) == self.player.location:
                     line += '█ '
                 else:
@@ -136,9 +140,6 @@ class DungeonMap:
                             break
             textmap = textmap + (f'│{line}│\n')
         textmap = textmap + ('└' + '─' * (2 * self.size) + '┘\n')
-        textmap = textmap + (" H = Home\n")
-        textmap = textmap + (" . = Hallway\n")
-        textmap = textmap + (" R = Room")
         return textmap
     def regenerate(self):
         self.grid: List[List[int]] = [[0] * self.size for _ in range(self.size)]
