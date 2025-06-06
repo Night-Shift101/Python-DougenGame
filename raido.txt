@@ -1,0 +1,77 @@
+import marimo
+
+__generated_with = "0.8.22"
+app = marimo.App(width="medium")
+
+
+@app.cell
+def __():
+    import marimo as mo
+    from paragradio.v2025_03 import WBFM_Rx
+    return WBFM_Rx, mo
+
+
+@app.cell(hide_code=True)
+def __(
+    WBFM_Rx,
+    bbGain,
+    channelWidth,
+    favorites,
+    freqOffset,
+    ifGain,
+    onoff,
+):
+    WBFM_Rx.config(
+        running=bool(onoff.value),
+        if_gain=int(ifGain.value),
+        center_freq=int(favorites.value),
+        bb_gain=int(bbGain.value),
+        channel_width=int(channelWidth.value), 
+        freq_offset=int(freqOffset.value)
+    )
+
+    return
+
+
+@app.cell
+def __(mo):
+    centerFreq = mo.ui.number(start=88, stop=108, step=.1, label="Frequency in MHz")
+    bbGain = mo.ui.slider(start=0, stop=62, step=2,label="Baseband gain in DB")
+    ifGain = mo.ui.dropdown(options={"Zero": 0, "Eight": 8, "Sixteen":16, "Twenty Four":24, "Thirty Two":32, "Fourty":40}, label="IF Gain in DB",value="Zero")
+    channelWidth = mo.ui.dropdown(options={"Wide (200 KHz)":200e3, "Normal (160 KHz)":160e3, "Narrow (120 KHz)":120e3}, label="Channel Width",value="Normal (160 KHz)")
+    freqOffset = mo.ui.number(start=-2e6, stop=2e6, step=5e3,  value=300e3, label="Frequency Offset")
+    onoff = mo.ui.switch(value=False, label="System Power (< Off | On>) ")
+
+    return bbGain, centerFreq, channelWidth, freqOffset, ifGain, onoff
+
+
+@app.cell
+def __(
+    bbGain,
+    centerFreq,
+    channelWidth,
+    favorites,
+    freqOffset,
+    ifGain,
+    mo,
+    onoff,
+):
+    mo.md(f"""{onoff}\n
+    {centerFreq}\n
+    {bbGain}\n
+    {ifGain}\n
+    {channelWidth}\n
+    {freqOffset}\n
+    {favorites}""")
+
+    return
+
+
+@app.cell(hide_code=True)
+def __(centerFreq, mo):
+    favorites = mo.ui.radio({"Use Slider": centerFreq.value*(10**6), "A": 91.3e6, "B": 92.5e6}, value="Use Slider", label="Favorite station")
+    return (favorites,)
+
+
+if __name__ == "__main__":
+    app.run()
